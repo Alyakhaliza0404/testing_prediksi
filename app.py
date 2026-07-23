@@ -104,12 +104,6 @@ if st.session_state.hasil_deteksi is None:
 
     if uploaded_file is not None:
 
-        # ← VALIDASI FORMAT FILE TAMBAHAN
-        ext = os.path.splitext(uploaded_file.name)[1].lower()
-        if ext not in ['.jpg', '.jpeg', '.png']:
-            st.error("⚠️ Format file tidak valid! Gunakan format .jpg, .jpeg, atau .png")
-            st.stop()
-
         image = Image.open(uploaded_file).convert("RGB")
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
