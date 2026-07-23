@@ -34,25 +34,20 @@ model = load_model()
 
 # ====================================
 # SESSION STATE
-# Menyimpan hasil deteksi supaya "halaman hasil" tetap tampil
-# selama belum di-reset, dan tidak dihitung ulang tiap interaksi.
 # ====================================
 if "hasil_deteksi" not in st.session_state:
-    st.session_state.hasil_deteksi = None  # None = masih di halaman utama
-
+    st.session_state.hasil_deteksi = None
 
 def reset_ke_halaman_utama():
     st.session_state.hasil_deteksi = None
 
-
 # ====================================
-# TITLE (selalu tampil di kedua halaman)
+# TITLE
 # ====================================
 st.title("👁️ Deteksi Katarak Mata")
 
 # ====================================
 # HALAMAN UTAMA
-# Tampil hanya jika belum ada hasil deteksi tersimpan
 # ====================================
 if st.session_state.hasil_deteksi is None:
 
@@ -108,6 +103,13 @@ if st.session_state.hasil_deteksi is None:
     )
 
     if uploaded_file is not None:
+
+        # ← VALIDASI FORMAT FILE TAMBAHAN
+        ext = os.path.splitext(uploaded_file.name)[1].lower()
+        if ext not in ['.jpg', '.jpeg', '.png']:
+            st.error("⚠️ Format file tidak valid! Gunakan format .jpg, .jpeg, atau .png")
+            st.stop()
+
         image = Image.open(uploaded_file).convert("RGB")
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
@@ -140,8 +142,6 @@ if st.session_state.hasil_deteksi is None:
                     label = None
                     conf = None
 
-            # Simpan semua yang dibutuhkan halaman hasil ke session_state,
-            # lalu picu rerun supaya berpindah ke "halaman hasil".
             st.session_state.hasil_deteksi = {
                 "gambar_asli": image,
                 "gambar_hasil_path": result_image_path if os.path.exists(result_image_path) else None,
@@ -155,7 +155,6 @@ if st.session_state.hasil_deteksi is None:
 
 # ====================================
 # HALAMAN HASIL
-# Tampil setelah deteksi selesai dan hasil tersimpan di session_state
 # ====================================
 else:
     hasil = st.session_state.hasil_deteksi
