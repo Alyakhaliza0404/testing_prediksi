@@ -103,7 +103,11 @@ if st.session_state.hasil_deteksi is None:
     )
 
     if uploaded_file is not None:
+        allowed_types = ["image/jpeg", "image/png"]
 
+        if uploaded_file.type not in allowed_types:
+            st.error("⚠️ Format file tidak didukung. Silakan upload gambar dengan format JPG, JPEG, atau PNG.")
+            st.stop()
         image = Image.open(uploaded_file).convert("RGB")
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
